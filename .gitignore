@@ -1,1 +1,2 @@
 build/\n*.o\n*.swp\ndocs/\n*.log\n*.out\n*.a\n*.so\n*.gcda\n*.gcno\n*.gcov
+.vscode/

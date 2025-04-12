@@ -1,9 +1,24 @@
+/**
+ * @file matrix.c
+ * @brief Реализация операций с матрицами
+ * 
+ * Содержит реализацию всех функций, объявленных в matrix.h
+ */
+
 #include "matrix.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 
-// Создание матрицы
+/**
+ * @brief Создает новую матрицу указанного размера
+ * 
+ * @param rows Количество строк
+ * @param cols Количество столбцов
+ * @return Указатель на созданную матрицу
+ * @note Выделяет память под структуру матрицы и её данные
+ * @warning Требует последующего освобождения через free_matrix()
+ */
 Matrix* create_matrix(int rows, int cols) {
     assert(rows > 0 && cols > 0); 
 
@@ -23,7 +38,12 @@ Matrix* create_matrix(int rows, int cols) {
     return matrix;
 }
 
-// Освобождение памяти
+/**
+ * @brief Освобождает память, занятую матрицей
+ * 
+ * @param matrix Указатель на матрицу для освобождения
+ * @note Корректно обрабатывает NULL-указатель
+ */
 void free_matrix(Matrix* matrix) {
     if (matrix) {
         for (int iter = 0; iter < matrix->rows; iter++) 
@@ -33,7 +53,17 @@ void free_matrix(Matrix* matrix) {
     }
 }
 
-// Загрузка матрицы из файла
+/**
+ * @brief Загружает матрицу из текстового файла
+ * 
+ * Формат файла:
+ * - Первые два числа: rows cols
+ * - Последующие rows×cols чисел: элементы матрицы
+ * 
+ * @param filename Путь к файлу
+ * @return Указатель на загруженную матрицу
+ * @see save_matrix_to_file()
+ */
 Matrix* load_matrix_from_file(const char* filename) {
     FILE* file = fopen(filename, "r");
     assert(file != NULL); 
@@ -50,7 +80,12 @@ Matrix* load_matrix_from_file(const char* filename) {
     return matrix;
 }
 
-// Копирование матрицы
+/**
+ * @brief Создает глубокую копию матрицы
+ * 
+ * @param src Исходная матрица для копирования
+ * @return Новая независимая копия матрицы
+ */
 Matrix* copy_matrix(const Matrix* src) {
     assert(src != NULL); 
 
@@ -62,7 +97,14 @@ Matrix* copy_matrix(const Matrix* src) {
     return dest;
 }
 
-// Сложение матриц
+/**
+ * @brief Складывает две матрицы поэлементно
+ * 
+ * @param a Первая матрица
+ * @param b Вторая матрица
+ * @return Новая матрица - результат сложения
+ * @assert Размеры матриц должны совпадать
+ */
 Matrix* add_matrices(const Matrix* a, const Matrix* b) {
     assert(a != NULL && b != NULL); 
     assert(a->rows == b->rows && a->cols == b->cols); 
@@ -74,7 +116,15 @@ Matrix* add_matrices(const Matrix* a, const Matrix* b) {
         
     return result;
 }
-//Разность матриц
+
+/**
+ * @brief Вычитает две матрицы поэлементно
+ * 
+ * @param a Матрица, из которой вычитают
+ * @param b Матрица, которую вычитают
+ * @return Новая матрица - результат вычитания
+ * @assert Размеры матриц должны совпадать
+ */
 Matrix* subtract_matrices(const Matrix* a, const Matrix* b) {
     assert(a != NULL && b != NULL); 
     assert(a->rows == b->rows && a->cols == b->cols); 
@@ -87,7 +137,14 @@ Matrix* subtract_matrices(const Matrix* a, const Matrix* b) {
     return result;
 }
 
-// Умножение матриц
+/**
+ * @brief Умножает две матрицы
+ * 
+ * @param a Первая матрица (m×n)
+ * @param b Вторая матрица (n×k)
+ * @return Новая матрица размера m×k
+ * @assert Число столбцов a должно совпадать с числом строк b
+ */
 Matrix* multiply_matrices(const Matrix* a, const Matrix* b) {
     assert(a != NULL && b != NULL); 
     assert(a->cols == b->rows); 
@@ -102,7 +159,12 @@ Matrix* multiply_matrices(const Matrix* a, const Matrix* b) {
     return result;
 }
 
-// Транспонирование матрицы
+/**
+ * @brief Транспонирует матрицу
+ * 
+ * @param matrix Исходная матрица
+ * @return Новая матрица - результат транспонирования
+ */
 Matrix* transpose_matrix(const Matrix* matrix) {
     assert(matrix != NULL); 
 
@@ -114,7 +176,15 @@ Matrix* transpose_matrix(const Matrix* matrix) {
     return result;
 }
 
-// Рекурсивное вычисление детерминанта
+/**
+ * @brief Вычисляет определитель матрицы
+ * 
+ * Использует рекурсивный алгоритм разложения по первой строке
+ * 
+ * @param matrix Квадратная матрица
+ * @return Значение определителя
+ * @assert Матрица должна быть квадратной
+ */
 MatrixType determinant(const Matrix* matrix) {
     assert(matrix != NULL); 
     assert(matrix->rows == matrix->cols); 
@@ -136,7 +206,7 @@ MatrixType determinant(const Matrix* matrix) {
                     subcol++;
                 }
         }
-        det += (col % 2 == 0 ? 1 : -1) * matrix->data[0][col] * determinant(submatrix);
+	det += (col % 2 == 0 ? -1 : 1) * matrix->data[0][col] * determinant(submatrix);
         free_matrix(submatrix);
     }
     return det;
